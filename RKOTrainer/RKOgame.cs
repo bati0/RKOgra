@@ -27,10 +27,15 @@ namespace RKOTrainer
         private long lastCompressionTime = 0;
         private bool isCompressionPhase = true;
         private double targetRate = 0;
-        private const int INDICATOR_WIDTH = 40;
-        private const int INDICATOR_HEIGHT = 300;
+        private const int INDICATOR_WIDTH = 100;
+        private const int INDICATOR_HEIGHT = 600;
         private int totalScore = 0;
         private double indicatorVelocity = 0;
+        
+        private PictureBox cprPictureBox;
+        private Image cprUpImage;
+        private Image cprDownImage;
+        private Image pulseImage;
         
         private const double GRAVITY = 0.2; // Zmniejszona siła grawitacji
         private const double VELOCITY_DAMPING = 0.92; // Zwiększone tłumienie
@@ -60,16 +65,16 @@ namespace RKOTrainer
 
         private void InitializeCustomComponents()
         {
-            this.Size = new Size(400, 500);
+            this.Size = new Size(1280, 720);
             this.Text = "RKO Trainer";
             
             stopwatch = new Stopwatch();
 
-            // Panel wskaźnika tempa - teraz pionowy
+            // Panel wskaźnika tempa
             tempoIndicatorPanel = new Panel
             {
                 Size = new Size(INDICATOR_WIDTH, INDICATOR_HEIGHT),
-                Location = new Point(50, 20),
+                Location = new Point(750, 40),
                 BorderStyle = BorderStyle.FixedSingle
             };
             tempoIndicatorPanel.Paint += TempoIndicator_Paint;
@@ -78,8 +83,8 @@ namespace RKOTrainer
             compressionButton = new Button
             {
                 Text = "Uciśnij klatkę piersiową",
-                Size = new Size(200, 60),
-                Location = new Point(120, 80),
+                Size = new Size(300, 60),
+                Location = new Point(900, 80),
                 BackColor = Color.LightBlue
             };
             compressionButton.Click += CompressionButton_Click;
@@ -88,8 +93,8 @@ namespace RKOTrainer
             breathButton = new Button
             {
                 Text = "Wykonaj oddech ratunkowy",
-                Size = new Size(200, 60),
-                Location = new Point(120, 150),
+                Size = new Size(300, 60),
+                Location = new Point(900, 150),
                 BackColor = Color.LightGreen,
                 Enabled = false
             };
@@ -100,7 +105,7 @@ namespace RKOTrainer
             {
                 Text = "Punkty: 0",
                 Size = new Size(200, 20),
-                Location = new Point(120, 230),
+                Location = new Point(850, 230),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Font = new Font("Arial", 12, FontStyle.Bold)
             };
@@ -108,7 +113,7 @@ namespace RKOTrainer
             statusLabel = new Label
             {
                 Size = new Size(350, 20),
-                Location = new Point(25, 260),
+                Location = new Point(850, 260),
                 TextAlign = ContentAlignment.MiddleCenter
             };
 
@@ -116,7 +121,7 @@ namespace RKOTrainer
             {
                 Text = "Czas: 0:00",
                 Size = new Size(350, 20),
-                Location = new Point(25, 290),
+                Location = new Point(850, 290),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Font = new Font("Arial", 12)
             };
@@ -125,15 +130,31 @@ namespace RKOTrainer
             {
                 Text = "Liczba uciśnięć: 0/30",
                 Size = new Size(150, 20),
-                Location = new Point(25, 320)
+                Location = new Point(850, 320)
             };
 
             breathCountLabel = new Label
             {
                 Text = "Liczba oddechów: 0/2",
                 Size = new Size(150, 20),
-                Location = new Point(225, 320)
+                Location = new Point(850, 320)
             };
+            
+            cprPictureBox = new PictureBox
+            {
+                Size = new Size(720, 720),
+                Location = new Point(0, 0),
+                SizeMode = PictureBoxSizeMode.StretchImage
+            };
+            Controls.Add(cprPictureBox);
+
+            // Załaduj obrazy
+            cprUpImage = Image.FromFile("CPRup.jpg");
+            cprDownImage = Image.FromFile("CPRdown.jpg");
+            pulseImage = Image.FromFile("pulse.png");
+
+            // Ustaw domyślny obraz
+            cprPictureBox.Image = cprUpImage;
 
             Controls.Add(tempoIndicatorPanel);
             Controls.Add(compressionButton);
@@ -175,15 +196,12 @@ namespace RKOTrainer
             }
 
             // Rysowanie wskaźnika (trójkąt)
-            Point[] trianglePoints = new Point[]
+            if (pulseImage != null)
             {
-                new Point(0, indicatorPosition),
-                new Point(INDICATOR_WIDTH, indicatorPosition - 10),
-                new Point(INDICATOR_WIDTH, indicatorPosition + 10)
-            };
-            using (SolidBrush triangleBrush = new SolidBrush(Color.Black))
-            {
-                g.FillPolygon(triangleBrush, trianglePoints);
+                int imageHeight = pulseImage.Height;
+                int imageWidth = pulseImage.Width;
+                int yPosition = indicatorPosition - (imageHeight / 2);
+                g.DrawImage(pulseImage, 0, yPosition, imageWidth, imageHeight);
             }
 
             // Dodanie oznaczeń tempa (teraz po prawej stronie)
@@ -278,7 +296,7 @@ namespace RKOTrainer
             return validIntervals > 0 ? totalRate / validIntervals : 110;
         }
 
-        private void CompressionButton_Click(object sender, EventArgs e)
+        private async void CompressionButton_Click(object sender, EventArgs e)
         {
             if (!stopwatch.IsRunning)
             {
@@ -291,7 +309,7 @@ namespace RKOTrainer
             }
 
             long currentTime = stopwatch.ElapsedMilliseconds;
-            
+
             // Dodaj nowy czas do historii
             compressionTimes.Enqueue(currentTime);
             while (compressionTimes.Count > MAX_COMPRESSION_HISTORY)
@@ -317,7 +335,7 @@ namespace RKOTrainer
             scoreLabel.Text = $"Punkty: {totalScore}";
 
             lastCompressionTime = currentTime;
-            
+
             compressionCount++;
             if (compressionCount >= 30)
             {
@@ -329,6 +347,15 @@ namespace RKOTrainer
             }
 
             UpdateLabels();
+
+            // Zmień obraz na CPRdown.webp
+            cprPictureBox.Image = cprDownImage;
+
+            // Czekaj 10ms
+            await Task.Delay(150);
+
+            // Przywróć obraz na CPRup.webp
+            cprPictureBox.Image = cprUpImage;
         }
 
         private int CalculatePoints(double rate)
