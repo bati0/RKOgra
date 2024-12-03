@@ -1,4 +1,3 @@
-
 namespace RKOTrainer
 {
     static class Program
@@ -7,7 +6,7 @@ namespace RKOTrainer
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            Application.Run(new RKOGame());
+            Application.Run(new MainMenu());
         }
     }
 }
