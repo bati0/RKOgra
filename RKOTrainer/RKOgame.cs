@@ -14,6 +14,8 @@ namespace RKOTrainer
         private Stopwatch _stopwatch;
         private System.Windows.Forms.Timer _animationTimer;
         private System.Windows.Forms.Timer _gameTimer;
+        private Random _random;
+        private System.Windows.Forms.Timer _hiddenTimer;
 
         public RkoGame()
         {
@@ -34,6 +36,9 @@ namespace RKOTrainer
             // Konfiguracja timera gry
             _gameTimer.Interval = 1000; // 1 sekunda
             _gameTimer.Tick += GameTimer_Tick;
+            
+            // Konfiguracja timera końca gry
+            InitializeHiddenTimer();
         }
 
         private void InitializeCustomComponents()
@@ -44,6 +49,7 @@ namespace RKOTrainer
             // Add event handlers for buttons
             _gameUi.CompressionButton.Click += CompressionButton_Click;
             _gameUi.BreathButton.Click += BreathButton_Click;
+            _gameUi.BackToMenuButton.Click += BackToMenuButton_Click;
         }
 
         private void AnimationTimer_Tick(object sender, EventArgs e)
@@ -81,6 +87,37 @@ namespace RKOTrainer
 
             UpdateStatusLabel(_gameState.CurrentRate);
             _gameUi.TempoIndicatorPanel.Invalidate();
+        }
+        
+        private void InitializeHiddenTimer()
+        {
+            _random = new Random();
+            _hiddenTimer = new System.Windows.Forms.Timer();
+            _hiddenTimer.Interval = _random.Next(30000, 100000); // 30 sekund - 100 sekund
+            _hiddenTimer.Tick += HiddenTimer_Tick;
+            _hiddenTimer.Start();
+        }
+        
+        private void HiddenTimer_Tick(object sender, EventArgs e)
+        {
+            _hiddenTimer.Stop();
+            if (_gameState.TotalScore > 1000)
+            {
+                _gameState.DifficultyLevel++;
+                MessageBox.Show("Czas na RKO minął! Uzyskany wynik to " + _gameState.TotalScore + 
+                                "\n Gratulacje, odblokowałeś następny poziom", "Koniec gry");
+                _gameState.TotalScore = 0;
+                
+                _gameTimer.Start();
+                StartNewCycle();
+            }
+            else
+            {
+                MessageBox.Show("Czas na RKO minął! Uzyskany wynik to " + _gameState.TotalScore + 
+                                "\n Niestety nie udało Ci się odblokować następnego poziomu", "Koniec gry");
+                BackToMenuButton_Click(sender, e);
+            }
+            
         }
 
         private void GameTimer_Tick(object sender, EventArgs e)
@@ -166,6 +203,7 @@ namespace RKOTrainer
         {
             _gameUi.CompressionCountLabel.Text = $"Liczba uciśnięć: {_gameState.CompressionCount}/30";
             _gameUi.BreathCountLabel.Text = $"Liczba oddechów: {_gameState.BreathCount}/2";
+            UpdateUiForDifficultyLevel();
         }
 
         private void BreathButton_Click(object sender, EventArgs e)
@@ -175,7 +213,6 @@ namespace RKOTrainer
 
             if (_gameState.BreathCount >= 2)
             {
-                MessageBox.Show($"Cykl zakończony!\nTwój wynik: {_gameState.TotalScore} punktów", "Sukces!");
                 StartNewCycle();
             }
             else
@@ -185,28 +222,54 @@ namespace RKOTrainer
 
             UpdateLabels();
         }
-
+        private void BackToMenuButton_Click(object sender, EventArgs e)
+        {
+            _gameUi.Hide();
+            _gameUi.Dispose();
+            MainMenu mainMenu = new MainMenu();
+            mainMenu.Show();
+        }
         private void StartNewCycle()
         {
             _gameState.CompressionCount = 0;
             _gameState.BreathCount = 0;
             _gameState.IsCompressionPhase = true;
-            _stopwatch.Reset();
-            _gameTimer.Stop();
+            
             _gameUi.CompressionButton.Enabled = true;
             _gameUi.BreathButton.Enabled = false;
             _gameState.CurrentRate = 110;
-            _gameState.TotalScore = 0;
             _gameState.IndicatorPosition = GameUi.IndicatorHeight / 2;
             _gameState.IndicatorVelocity = 0;
             _gameState.CompressionTimes.Clear();
 
             UpdateLabels();
-            _gameUi.ScoreLabel.Text = "Punkty: 0";
             _gameUi.StatusLabel.Text = "Rozpocznij uciskanie klatki piersiowej";
-            _gameUi.TimerLabel.Text = "Czas: 0:00";
             _gameUi.TempoIndicatorPanel.Invalidate();
             _animationTimer.Start();
+            
+            UpdateUiForDifficultyLevel();
+        }
+        
+        private void UpdateUiForDifficultyLevel()
+        {
+            switch (_gameState.DifficultyLevel)
+            {
+                case 1:
+                    _gameUi.CompressionCountLabel.Visible = true;
+                    _gameUi.BreathCountLabel.Visible = true;
+                    _gameUi.TempoIndicatorPanel.Visible = true;
+                    break;
+                case 2:
+                    _gameUi.CompressionCountLabel.Visible = false;
+                    _gameUi.BreathCountLabel.Visible = false;
+                    _gameUi.TempoIndicatorPanel.Visible = true;
+                    break;
+                case 3:
+                    _gameUi.CompressionCountLabel.Visible = false;
+                    _gameUi.BreathCountLabel.Visible = false;
+                    _gameUi.TempoIndicatorPanel.Visible = false;
+                    break;
+            }
         }
     }
 }

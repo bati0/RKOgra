@@ -8,12 +8,14 @@ namespace RKOTrainer
 {
     public class GameUi : Form
     {
-        private GameState gameState;
+        private GameState _gameState;
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Button CompressionButton { get; private set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Button BreathButton { get; private set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Button BackToMenuButton { get; private set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Label StatusLabel { get; private set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -40,7 +42,7 @@ namespace RKOTrainer
 
         public GameUi(GameState gameState)
         {
-            this.gameState = gameState;
+            this._gameState = gameState;
             InitializeCustomComponents();
         }
 
@@ -54,7 +56,8 @@ namespace RKOTrainer
             {
                 Size = new Size(IndicatorWidth, IndicatorHeight),
                 Location = new Point(750, 40),
-                BorderStyle = BorderStyle.FixedSingle
+                BorderStyle = BorderStyle.FixedSingle,
+                Visible = true
             };
             TempoIndicatorPanel.Paint += TempoIndicator_Paint;
 
@@ -74,7 +77,14 @@ namespace RKOTrainer
                 Size = new Size(300, 60),
                 Location = new Point(900, 150),
                 BackColor = Color.LightGreen,
-                Enabled = false
+            };
+
+            BackToMenuButton = new Button()
+            {
+                Text = "Powrót do menu",
+                Size = new Size(300, 60),
+                Location = new Point(900, 550),
+                BackColor = Color.LightGray
             };
 
             // Etykiety
@@ -107,14 +117,16 @@ namespace RKOTrainer
             {
                 Text = "Liczba uciśnięć: 0/30",
                 Size = new Size(150, 20),
-                Location = new Point(850, 320)
+                Location = new Point(850, 320),
+                Visible = true
             };
 
             BreathCountLabel = new Label
             {
                 Text = "Liczba oddechów: 0/2",
                 Size = new Size(150, 20),
-                Location = new Point(850, 320)
+                Location = new Point(850, 320),
+                Visible = true
             };
 
             CprPictureBox = new PictureBox
@@ -136,6 +148,7 @@ namespace RKOTrainer
             Controls.Add(TempoIndicatorPanel);
             Controls.Add(CompressionButton);
             Controls.Add(BreathButton);
+            Controls.Add(BackToMenuButton);
             Controls.Add(StatusLabel);
             Controls.Add(TimerLabel);
             Controls.Add(CompressionCountLabel);
@@ -175,7 +188,7 @@ namespace RKOTrainer
             {
                 int imageHeight = PulseImage.Height;
                 int imageWidth = PulseImage.Width;
-                int yPosition = gameState.IndicatorPosition - (imageHeight / 2);
+                int yPosition = _gameState.IndicatorPosition - (imageHeight / 2);
                 g.DrawImage(PulseImage, 0, yPosition, imageWidth, imageHeight);
             }
 
