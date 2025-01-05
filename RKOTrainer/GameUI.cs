@@ -91,41 +91,45 @@ namespace RKOTrainer
             ScoreLabel = new Label
             {
                 Text = "Punkty: 0",
-                Size = new Size(200, 20),
-                Location = new Point(850, 230),
+                Size = new Size(300, 30),
+                Location = new Point(900, 230),
                 TextAlign = ContentAlignment.MiddleCenter,
-                Font = new Font("Arial", 12, FontStyle.Bold)
+                Font = new Font("Arial", 15, FontStyle.Bold)
             };
 
             StatusLabel = new Label
             {
-                Size = new Size(350, 20),
-                Location = new Point(850, 260),
+                Size = new Size(300, 30),
+                Location = new Point(900, 260),
                 TextAlign = ContentAlignment.MiddleCenter
             };
 
             TimerLabel = new Label
             {
                 Text = "Czas: 0:00",
-                Size = new Size(350, 20),
-                Location = new Point(850, 290),
+                Size = new Size(300, 30),
+                Location = new Point(900, 290),
                 TextAlign = ContentAlignment.MiddleCenter,
-                Font = new Font("Arial", 12)
+                Font = new Font("Arial", 15)
             };
 
             CompressionCountLabel = new Label
             {
                 Text = "Liczba uciśnięć: 0/30",
-                Size = new Size(150, 20),
-                Location = new Point(850, 320),
+                Size = new Size(300, 30),
+                Location = new Point(900, 420),
+                Font = new Font("Arial", 15, FontStyle.Bold),
+                TextAlign = ContentAlignment.MiddleCenter,
                 Visible = true
             };
 
             BreathCountLabel = new Label
             {
                 Text = "Liczba oddechów: 0/2",
-                Size = new Size(150, 20),
-                Location = new Point(850, 320),
+                Size = new Size(300, 30),
+                Location = new Point(900, 450),
+                Font = new Font("Arial", 15, FontStyle.Bold),
+                TextAlign = ContentAlignment.MiddleCenter,
                 Visible = true
             };
 
@@ -160,6 +164,8 @@ namespace RKOTrainer
         {
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
+            this.DoubleBuffered = true;
+
 
             // Tworzenie pionowego gradientu
             using (LinearGradientBrush gradientBrush = new LinearGradientBrush(
@@ -192,15 +198,15 @@ namespace RKOTrainer
                 g.DrawImage(PulseImage, 0, yPosition, imageWidth, imageHeight);
             }
 
-            // Dodanie oznaczeń tempa (teraz po prawej stronie)
-            using (Font font = new Font("Arial", 8))
+            // Dodanie oznaczeń tempa na wskaźniku
+            using (Font font = new Font("Arial", 14))
             using (SolidBrush textBrush = new SolidBrush(Color.Black))
             {
-                g.DrawString("160", font, textBrush, new PointF(IndicatorWidth + 2, 5));
-                g.DrawString("120", font, textBrush, new PointF(IndicatorWidth + 2, IndicatorHeight * 0.3f));
-                g.DrawString("110", font, textBrush, new PointF(IndicatorWidth + 2, IndicatorHeight * 0.5f));
-                g.DrawString("100", font, textBrush, new PointF(IndicatorWidth + 2, IndicatorHeight * 0.7f));
-                g.DrawString("60", font, textBrush, new PointF(IndicatorWidth + 2, IndicatorHeight - 15));
+                g.DrawString("160", font, textBrush, new PointF(IndicatorWidth / 2, 5));
+                g.DrawString("120", font, textBrush, new PointF(IndicatorWidth / 2, IndicatorHeight * 0.35f+7));
+                g.DrawString("110", font, textBrush, new PointF(IndicatorWidth / 2, IndicatorHeight * 0.5f+7));
+                g.DrawString("100", font, textBrush, new PointF(IndicatorWidth / 2, IndicatorHeight * 0.65f+7));
+                g.DrawString("60", font, textBrush, new PointF(IndicatorWidth / 2, IndicatorHeight - 30));
             }
         }
     }

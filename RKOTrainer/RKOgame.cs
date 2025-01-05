@@ -16,6 +16,8 @@ namespace RKOTrainer
         private System.Windows.Forms.Timer _gameTimer;
         private Random _random;
         private System.Windows.Forms.Timer _hiddenTimer;
+            
+
 
         public RkoGame()
         {
@@ -27,6 +29,7 @@ namespace RKOTrainer
             _gameTimer = new System.Windows.Forms.Timer();
 
             InitializeCustomComponents();
+            
 
             // Konfiguracja timera animacji
             _animationTimer.Interval = 16; // około 60 FPS
@@ -100,22 +103,31 @@ namespace RKOTrainer
         
         private void HiddenTimer_Tick(object sender, EventArgs e)
         {
+            //TODO dodanie zakończenia gry gdy ukończymy poziom 3 pozytywnie
+            
             _hiddenTimer.Stop();
-            if (_gameState.TotalScore > 1000)
+            if (_gameState.TotalScore > 1000) //TODO ustawienie punktów do odblokowania poziomu adekwatnie do liczby cykli wykonanych
             {
                 _gameState.DifficultyLevel++;
                 MessageBox.Show("Czas na RKO minął! Uzyskany wynik to " + _gameState.TotalScore + 
                                 "\n Gratulacje, odblokowałeś następny poziom", "Koniec gry");
                 _gameState.TotalScore = 0;
                 
+                
+                //TODO wyzerowanie czasu, przywrócenie stanu początkowego 
+                _gameTimer.Dispose();
                 _gameTimer.Start();
                 StartNewCycle();
+                _hiddenTimer.Dispose();
+                InitializeHiddenTimer();
             }
             else
             {
                 MessageBox.Show("Czas na RKO minął! Uzyskany wynik to " + _gameState.TotalScore + 
-                                "\n Niestety nie udało Ci się odblokować następnego poziomu", "Koniec gry");
+                                "\n Niestety nie udało Ci się odblokować następnego poziomu"+
+                    "nastąpi powrót do menu głównego gdzie możesz rozpocząć kolejne podejście", "Koniec gry", MessageBoxButtons.OK);
                 BackToMenuButton_Click(sender, e);
+                _hiddenTimer.Dispose();
             }
             
         }
@@ -265,6 +277,7 @@ namespace RKOTrainer
                     _gameUi.TempoIndicatorPanel.Visible = true;
                     break;
                 case 3:
+                    _gameUi.ScoreLabel.Visible = false;
                     _gameUi.CompressionCountLabel.Visible = false;
                     _gameUi.BreathCountLabel.Visible = false;
                     _gameUi.TempoIndicatorPanel.Visible = false;

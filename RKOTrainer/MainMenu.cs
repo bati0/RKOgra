@@ -14,11 +14,11 @@ namespace RKOTrainer
             InitializeComponents();
         }
 
-        private void InitializeComponents()
+        private void InitializeComponents() //TODO ustawnienie elementów menu, dodanie grafiki (?)
         {
             this.Text = "RKO Trainer";
             this.Size = new System.Drawing.Size(1280, 720);
-
+            
             _startGameButton = new Button();
             _startGameButton.Text = "Rozpocznij grę";
             _startGameButton.Location = new System.Drawing.Point(100, 30);
