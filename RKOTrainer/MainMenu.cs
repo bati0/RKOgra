@@ -8,10 +8,14 @@ namespace RKOTrainer
         private Button _startGameButton;
         private Button _instructionsButton;
         private Button _exitButton;
+        private PictureBox _mainMenuBackgroundBox;
+        private Image MainMenuBackground;
 
         public MainMenu()
         {
             InitializeComponents();
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
         }
 
         private void InitializeComponents() //TODO ustawnienie elementów menu, dodanie grafiki (?)
@@ -25,7 +29,7 @@ namespace RKOTrainer
             _startGameButton.Click += StartGameButton_Click;
 
             _instructionsButton = new Button();
-            _instructionsButton.Text = "Wskaźówki";
+            _instructionsButton.Text = "Wskazówki";
             _instructionsButton.Location = new System.Drawing.Point(100, 70);
             _instructionsButton.Click += InstructionsButton_Click;
 
@@ -33,7 +37,18 @@ namespace RKOTrainer
             _exitButton.Text = "Wyjście";
             _exitButton.Location = new System.Drawing.Point(100, 110);
             _exitButton.Click += ExitButton_Click;
-
+            
+            _mainMenuBackgroundBox = new PictureBox
+            {
+                Size = new Size(1280, 720),
+                Location = new Point(0, 0),
+                SizeMode = PictureBoxSizeMode.StretchImage
+            };
+            Controls.Add(_mainMenuBackgroundBox);
+            
+            MainMenuBackground = Image.FromFile("pulse.png");
+            _mainMenuBackgroundBox.Image = MainMenuBackground;
+            
             this.Controls.Add(_startGameButton);
             this.Controls.Add(_instructionsButton);
             this.Controls.Add(_exitButton);

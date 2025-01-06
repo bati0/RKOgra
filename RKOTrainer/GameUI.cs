@@ -25,6 +25,8 @@ namespace RKOTrainer
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Label BreathCountLabel { get; private set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Label CycleCountLabel { get; private set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Label ScoreLabel { get; private set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Panel TempoIndicatorPanel { get; private set; }
@@ -43,7 +45,10 @@ namespace RKOTrainer
         public GameUi(GameState gameState)
         {
             this._gameState = gameState;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
             InitializeCustomComponents();
+
         }
 
         private void InitializeCustomComponents()
@@ -132,6 +137,15 @@ namespace RKOTrainer
                 TextAlign = ContentAlignment.MiddleCenter,
                 Visible = true
             };
+            CycleCountLabel = new Label
+            {
+                Text = "Liczba cykli: 0",
+                Size = new Size(300, 30),
+                Location = new Point(900, 480),
+                Font = new Font("Arial", 15, FontStyle.Bold),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Visible = true
+            };
 
             CprPictureBox = new PictureBox
             {
@@ -158,7 +172,10 @@ namespace RKOTrainer
             Controls.Add(CompressionCountLabel);
             Controls.Add(BreathCountLabel);
             Controls.Add(ScoreLabel);
+            Controls.Add(CycleCountLabel);
         }
+
+        
 
         private void TempoIndicator_Paint(object sender, PaintEventArgs e)
         {

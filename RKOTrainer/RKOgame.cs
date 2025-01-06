@@ -50,9 +50,9 @@ namespace RKOTrainer
             _gameUi.Show();
 
             // Add event handlers for buttons
-            _gameUi.CompressionButton.Click += CompressionButton_Click;
-            _gameUi.BreathButton.Click += BreathButton_Click;
-            _gameUi.BackToMenuButton.Click += BackToMenuButton_Click;
+            _gameUi.CompressionButton.Click += CompressionButton_Click!;
+            _gameUi.BreathButton.Click += BreathButton_Click!;
+            _gameUi.BackToMenuButton.Click += BackToMenuButton_Click!;
         }
 
         private void AnimationTimer_Tick(object sender, EventArgs e)
@@ -96,7 +96,7 @@ namespace RKOTrainer
         {
             _random = new Random();
             _hiddenTimer = new System.Windows.Forms.Timer();
-            _hiddenTimer.Interval = _random.Next(30000, 100000); // 30 sekund - 100 sekund
+            _hiddenTimer.Interval = _random.Next(10000, 10000);//_random.Next(30000, 100000); // 30 sekund - 100 sekund //TODO ustawić czas na planowany czas trwania gry (aktualnie 10-20s)
             _hiddenTimer.Tick += HiddenTimer_Tick;
             _hiddenTimer.Start();
         }
@@ -104,26 +104,35 @@ namespace RKOTrainer
         private void HiddenTimer_Tick(object sender, EventArgs e)
         {
             //TODO dodanie zakończenia gry gdy ukończymy poziom 3 pozytywnie
-            
+            float condition = 1000 * (_gameState.CycleCount + (float)_gameState.CompressionCount / 30);
+            Console.Out.WriteLine(condition);
             _hiddenTimer.Stop();
-            if (_gameState.TotalScore > 1000) //TODO ustawienie punktów do odblokowania poziomu adekwatnie do liczby cykli wykonanych
+            if (_gameState.TotalScore > condition & _gameState.DifficultyLevel<3) 
             {
                 _gameState.DifficultyLevel++;
-                MessageBox.Show("Czas na RKO minął! Uzyskany wynik to " + _gameState.TotalScore + 
+                MessageBox.Show("Czas na RKO minął! Uzyskany wynik to " + _gameState.TotalScore +
                                 "\n Gratulacje, odblokowałeś następny poziom", "Koniec gry");
                 _gameState.TotalScore = 0;
+                _gameState.CycleCount = 0;
                 
                 
-                //TODO wyzerowanie czasu, przywrócenie stanu początkowego 
+                _stopwatch.Reset();
                 _gameTimer.Dispose();
                 _gameTimer.Start();
                 StartNewCycle();
                 _hiddenTimer.Dispose();
                 InitializeHiddenTimer();
             }
+            else if (_gameState.TotalScore > 1000*(_gameState.CycleCount+_gameState.CompressionCount/30) & _gameState.DifficultyLevel==3) 
+            {
+                MessageBox.Show("Czas RKO minął! Uzyskany wynik to " + _gameState.TotalScore +
+                                "\n Gratulacje, uratowałeś życie,\n otrzymujesz order Młodszego ratownika!", "Koniec gry");
+                BackToMenuButton_Click(sender, e);
+                _hiddenTimer.Dispose();
+            }
             else
             {
-                MessageBox.Show("Czas na RKO minął! Uzyskany wynik to " + _gameState.TotalScore + 
+                MessageBox.Show("Czas na RKO minął! Uzyskany wynik to " + _gameState.TotalScore  + 
                                 "\n Niestety nie udało Ci się odblokować następnego poziomu"+
                     "nastąpi powrót do menu głównego gdzie możesz rozpocząć kolejne podejście", "Koniec gry", MessageBoxButtons.OK);
                 BackToMenuButton_Click(sender, e);
@@ -215,6 +224,7 @@ namespace RKOTrainer
         {
             _gameUi.CompressionCountLabel.Text = $"Liczba uciśnięć: {_gameState.CompressionCount}/30";
             _gameUi.BreathCountLabel.Text = $"Liczba oddechów: {_gameState.BreathCount}/2";
+            _gameUi.CycleCountLabel.Text = $"Liczba cykli: {_gameState.CycleCount}";
             UpdateUiForDifficultyLevel();
         }
 
@@ -226,6 +236,7 @@ namespace RKOTrainer
             if (_gameState.BreathCount >= 2)
             {
                 StartNewCycle();
+                _gameState.CycleCount++;
             }
             else
             {

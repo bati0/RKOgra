@@ -10,8 +10,9 @@ namespace RKOTrainer
         public double IndicatorVelocity { get; set; } = 0;
         public Queue<long> CompressionTimes { get; private set; } = new Queue<long>();
         public int CompressionCount { get; set; } = 0;
-        public int BreathCount { get; set; } = 0;
+        public float BreathCount { get; set; } = 0;
         public int TotalScore { get; set; } = 0;
+        public int CycleCount { get; set; } = 0;
         public bool IsCompressionPhase { get; set; } = true;
     }
     
