@@ -249,6 +249,7 @@ namespace RKOTrainer
         {
             _gameUi.Hide();
             _gameUi.Dispose();
+            _hiddenTimer.Dispose();
             MainMenu mainMenu = new MainMenu();
             mainMenu.Show();
         }
