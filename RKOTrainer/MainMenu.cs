@@ -88,8 +88,8 @@ namespace RKOTrainer
 
         private void InstructionsButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("RKO powinno być wykonywane w tempie 110 uderzeń/min, pomyśl o tempie " +
-                            "Bee Gees - Stayin' Alive, po 30 uciskach przyszła pora na 2 oddechy ratunkowe, po czym znów " +
+            MessageBox.Show("RKO powinno być wykonywane w tempie 110 uderzeń/min, pomyśl o tempie \n" +
+                            "Bee Gees - Stayin' Alive, po 30 uciskach przyszła pora na 2 oddechy ratunkowe, po czym znów \n" +
                             "wykonujemy 30 ucisków i tak do momentu przyjazdu ambulansu lub przywrócenia oddechu poszkodowanego ", "Wskaźówki");
         }
 

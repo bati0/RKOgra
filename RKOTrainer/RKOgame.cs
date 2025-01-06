@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Configuration;
 using System.Media;
 using System.Windows.Forms;
 
@@ -11,6 +12,7 @@ namespace RKOTrainer
         private GameLogic _gameLogic;
         private GameState _gameState;
         private GameUi _gameUi;
+        private Congrats _congrats;
         private Stopwatch _stopwatch;
         private System.Windows.Forms.Timer _animationTimer;
         private System.Windows.Forms.Timer _gameTimer;
@@ -22,6 +24,7 @@ namespace RKOTrainer
         public RkoGame()
         {
             _gameLogic = new GameLogic();
+            _congrats = new Congrats();
             _gameState = new GameState();
             _gameUi = new GameUi(_gameState);
             _stopwatch = new Stopwatch();
@@ -125,10 +128,14 @@ namespace RKOTrainer
             }
             else if (_gameState.TotalScore > 1000*(_gameState.CycleCount+_gameState.CompressionCount/30) & _gameState.DifficultyLevel==3) 
             {
-                MessageBox.Show("Czas RKO minął! Uzyskany wynik to " + _gameState.TotalScore +
-                                "\n Gratulacje, uratowałeś życie,\n otrzymujesz order Młodszego ratownika!", "Koniec gry");
-                BackToMenuButton_Click(sender, e);
+                this._gameUi.Hide();
                 _hiddenTimer.Dispose();
+                _congrats.Show();
+                
+                /*MessageBox.Show("Czas RKO minął! Uzyskany wynik to " + _gameState.TotalScore +
+                                "\n Gratulacje, uratowałeś życie,\n otrzymujesz order Młodszego ratownika!", "Koniec gry");
+                BackToMenuButton_Click(sender, e);*/
+                
             }
             else
             {
